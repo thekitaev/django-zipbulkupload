@@ -2,14 +2,20 @@
 Abstract model for easily creating related instances by uploading ZIP-archive to a model field.
 
 ## How to use
-First, copy `zipbulkupload` to your project root. And add to `INSTALLED_APPS`.
+First install package with
+```
+pip install git+git://github.com/thekitaev/django-zipbulkupload
+```
+Or just download it and copy to project root.
+
+Add `zipbulkupload` to `INSTALLED_APPS`.
 
 In `models.py` inherit parent model from `ZipBulkUploadModel`. Add `FromZipFileField` with `to_model` (`app.Model`) 
 and `to_field` attributes. If you need to limit file formats, you can add `exts` with a list or tuple of `.ext`'s.
 
 Default zip field name is `bulk_upload` but you can rename it at `BUMeta.bulkupload_field`.
 
-Add a second model with a `ForeignKey` to first one. For now it's name is limited to `parent`.
+Add a second model with a `ForeignKey` to first one.
 Add a target field for files. Should work for any subclasses or `FileField` and `ImageField`.
 
 Example:
@@ -26,19 +32,20 @@ class Parent(ZipBulkUploadModel):
 
 
 class Child(models.Model):
-    parent = models.ForeignKey('Parent') # hardcoded for now
+    parent = models.ForeignKey('Parent')
     image = models.FileField()
     # and so on
 ```
 
 Then `makemigrations` and `migrate` with `manage.py`.
 
-Now pack your files to a ZIP-archive. Create an instance and upload an archive to `FromZipFileField`. Voilà!
+Now pack your files into a ZIP-archive. Create an instance and upload an archive to `FromZipFileField`. Voilà!
 
 
 ### TODO
-- Unhardcode child's `parent` field name (EZ, soon)
+- Change `FromZipFileField`'s `to_model` format to `ForeignKey`'s one
 - Tests
+- Exceptions raising for wrong parameters
 - Several fields for one model
-- Filter in-archive system files
+- Filter in-archive system files (done partially)
 - Move functionality from model to field (maybe)

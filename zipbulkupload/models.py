@@ -6,10 +6,9 @@ from django.core.files import File
 from .contextmanagers import ZipManager
 
 
-# Create your models here.
 class ZipBulkUploadModel(models.Model):
     """
-    When saving with a ZIP-archive if a specified , extracts it to a temporary folder
+    When saving with a ZIP-archive in a specified field, extracts it to a temporary folder
     and creates instances related to self with files from an archive.
     """
 
@@ -22,6 +21,11 @@ class ZipBulkUploadModel(models.Model):
         valid_exts = bulkupload_field.exts
 
         target_model = apps.get_model(bulkupload_field.to_model)  # related model
+        target_fk_name = None
+        # finding foreign key in related model
+        for field in target_model._meta.fields:
+            if field.get_internal_type() == "ForeignKey" and field.related_model == self._meta.model:
+                target_fk_name = field.name
         target_field = bulkupload_field.to_field
 
         if getattr(self, bulk_field_name):  # if file is uploaded
@@ -29,11 +33,10 @@ class ZipBulkUploadModel(models.Model):
                 for target_file in zf:
                     with open(target_file, mode='rb') as local_file:
                         file_folder, file_name = os.path.split(target_file)
-                        child = target_model.objects.create(parent=self)  # TODO: dehardcode `parent` field
+                        create_kwargs = {target_fk_name: self}
+                        child = target_model.objects.create(**create_kwargs)
                         getattr(child, target_field).save(file_name, File(local_file))
-
-            setattr(self, bulk_field_name, None)
-            super(ZipBulkUploadModel, self).save(*args, **kwargs)
+            getattr(self, bulk_field_name).delete()  # delete an archive and clear field
 
     class Meta:
         abstract = True

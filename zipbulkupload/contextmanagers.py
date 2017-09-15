@@ -35,7 +35,10 @@ class ZipManager(object):
                     zip_file.extract(f.filename, path_to_extract)
 
         for filename in os.listdir(self.temp_folder):
-            yield os.path.join(settings.MEDIA_ROOT, self.temp_folder, filename)
+            full_path = os.path.join(settings.MEDIA_ROOT, self.temp_folder, filename)
+            if os.path.isfile(full_path):  # scans only files in archive root
+                yield full_path
 
     def __exit__(self, exc_type, exc_val, exc_tb):
+        # recursively delete temp folder
         shutil.rmtree(self.temp_folder)
