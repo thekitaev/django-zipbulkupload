@@ -3,6 +3,7 @@ import os
 from django.db import models
 from django.apps import apps
 from django.core.files import File
+
 from .contextmanagers import ZipManager
 
 
@@ -14,7 +15,7 @@ class ZipBulkUploadModel(models.Model):
 
     def save(self, *args, **kwargs):
         # first save instance to have a PK
-        super(ZipBulkUploadModel, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
         bulk_field_name = self.BUMeta.bulkupload_field  # name of zip-field
         bulkupload_field = self._meta.get_field(bulk_field_name)  # a field itself
@@ -24,7 +25,7 @@ class ZipBulkUploadModel(models.Model):
         target_fk_name = None
         # finding foreign key in related model
         for field in target_model._meta.fields:
-            if field.get_internal_type() == "ForeignKey" and field.related_model == self._meta.model:
+            if field.get_internal_type() == 'ForeignKey' and field.related_model == self._meta.model:
                 target_fk_name = field.name
         target_field = bulkupload_field.to_field
 
@@ -32,7 +33,7 @@ class ZipBulkUploadModel(models.Model):
             with ZipManager(getattr(self, bulk_field_name), valid_exts) as zf:
                 for target_file in zf:
                     with open(target_file, mode='rb') as local_file:
-                        file_folder, file_name = os.path.split(target_file)
+                        file_name = os.path.split(target_file)[1]
                         create_kwargs = {target_fk_name: self}
                         child = target_model.objects.create(**create_kwargs)
                         getattr(child, target_field).save(file_name, File(local_file))

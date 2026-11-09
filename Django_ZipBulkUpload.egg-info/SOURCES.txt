@@ -1,0 +1,12 @@
+LICENSE
+README.md
+setup.py
+Django_ZipBulkUpload.egg-info/PKG-INFO
+Django_ZipBulkUpload.egg-info/SOURCES.txt
+Django_ZipBulkUpload.egg-info/dependency_links.txt
+Django_ZipBulkUpload.egg-info/top_level.txt
+tests/test_zipbulkupload.py
+zipbulkupload/__init__.py
+zipbulkupload/contextmanagers.py
+zipbulkupload/fields.py
+zipbulkupload/models.py

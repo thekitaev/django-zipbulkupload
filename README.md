@@ -1,10 +1,12 @@
 # django-zipbulkupload
 Abstract model for easily creating related instances by uploading ZIP-archive to a model field.
 
+Python 3.8+ (tested on Python 3.9/3.14 with Django 4.2 LTS/6.x). Python 2 is no longer supported (version 0.1a was the last py2 release).
+
 ## How to use
 First install package with
 ```
-pip install git+git://github.com/thekitaev/django-zipbulkupload
+pip install git+https://github.com/thekitaev/django-zipbulkupload
 ```
 Or just download it and copy to project root.
 
@@ -42,9 +44,14 @@ Then `makemigrations` and `migrate` with `manage.py`.
 Now pack your files into a ZIP-archive. Create an instance and upload an archive to `FromZipFileField`. Voilà!
 
 
+## Tests
+```
+PYTHONPATH=. DJANGO_SETTINGS_MODULE=tests.settings python -m django test tests
+```
+
 ### TODO
 - Change `FromZipFileField`'s `to_model` format to `ForeignKey`'s one
-- Tests
+- ~~Tests~~
 - Exceptions raising for wrong parameters
 - Several fields for one model
 - Filter in-archive system files (done partially)

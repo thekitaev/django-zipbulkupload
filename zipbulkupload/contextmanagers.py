@@ -1,11 +1,12 @@
-import os, shutil
+import os
+import shutil
 
 from django.conf import settings
 from random import randint
 from zipfile import ZipFile
 
 
-class ZipManager(object):
+class ZipManager:
     """
     Context manager to extract files of given `exts` from ZIP.
     Yields full paths.
@@ -18,7 +19,7 @@ class ZipManager(object):
 
     def __enter__(self):
         def path_name():
-            return os.path.join(settings.MEDIA_ROOT, 'tmp_%03.d' % randint(0, 100))
+            return os.path.join(settings.MEDIA_ROOT, 'tmp_%03d' % randint(0, 100))
 
         path_to_extract = path_name()
 
@@ -35,7 +36,7 @@ class ZipManager(object):
                     zip_file.extract(f.filename, path_to_extract)
 
         for filename in os.listdir(self.temp_folder):
-            full_path = os.path.join(settings.MEDIA_ROOT, self.temp_folder, filename)
+            full_path = os.path.join(self.temp_folder, filename)
             if os.path.isfile(full_path):  # scans only files in archive root
                 yield full_path
 
